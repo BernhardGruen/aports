@@ -1,0 +1,64 @@
+# Maintainer: Bernhard J. M. Gruen <bernhard.gruen@googlemail.com>
+pkgname=burp
+pkgver=2.1.28
+pkgrel=0
+pkgdesc="Burp is a network backup and restore program"
+url="http://burp.grke.org"
+arch="all"
+license="AGPL3"
+depends=""
+depends_dev=""
+makedepends="uthash-dev libressl-dev zlib-dev librsync-dev acl-dev"
+install=""
+subpackages="$pkgname-doc $pkgname-server"
+source="https://sourceforge.net/projects/$pkgname/files/$pkgname-$pkgver/$pkgname-$pkgver.tar.bz2 burp.init"
+builddir="$srcdir/$pkgname-$pkgver"
+options="!check"
+
+build() {
+	cd "$builddir"
+	./configure \
+		--prefix=/usr \
+		--sbindir=/usr/bin \
+		--sysconfdir=/etc/burp \
+		--mandir=/usr/share/man \
+		--localstatedir=/var
+	make
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install-all
+	rm -rf "$pkgdir"/var
+	rm -rf "$pkgdir"/etc/burp/autoupgrade
+	rm -rf "$pkgdir"/etc/burp/clientconfdir
+	chmod -R go-rwx "$pkgdir"/etc/burp
+}
+
+server() {
+	pkgdesc="burp is a network backup and restore program - server configuration and helper scripts"
+	depends="bash"
+	cd "$builddir"
+	mkdir -p "$subpkgdir"/var/spool/burp
+	chmod 0755 "$subpkgdir"/var/spool
+	chmod 0700 "$subpkgdir"/var/spool/burp
+	mkdir -p "$subpkgdir"/usr/share/burp/scripts
+	mv "$pkgdir"/usr/share/burp/scripts "$subpkgdir"/usr/share/burp
+	rm -rf "$pkgdir"/usr/share
+
+	mkdir -p "$subpkgdir"/etc/burp
+	mv "$pkgdir"/etc/burp/CA.cnf "$subpkgdir"/etc/burp/CA.cnf
+	mv "$pkgdir"/etc/burp/burp-server.conf "$subpkgdir"/etc/burp/burp-server.conf
+
+	install -Dm755 "$srcdir"/burp.init "$subpkgdir"/etc/init.d/burp
+
+	mkdir -p "$subpkgdir"/usr/bin
+	mv "$pkgdir"/usr/bin/bedup "$subpkgdir"/usr/bin
+	mv "$pkgdir"/usr/bin/bsigs "$subpkgdir"/usr/bin
+	mv "$pkgdir"/usr/bin/bsparse "$subpkgdir"/usr/bin
+	mv "$pkgdir"/usr/bin/burp_ca "$subpkgdir"/usr/bin
+	mv "$pkgdir"/usr/bin/vss_strip "$subpkgdir"/usr/bin
+}
+
+sha512sums="d60e66336309a9047c32d96294618218729f56a9dafe409d77f705ed73df5c28380b1c1e59ce2242929e6055f1aede610661c515471a9156c25dee00544d9d13  burp-2.1.28.tar.bz2
+b3354c72c3156ce40620c4c8138195182cf431bad67e4aa4a40c1fe3f6fcdc1aff0294f85c892e616dc5e5fd7202a741172b457bef34314f70fbbf2367e35cda  burp.init"
