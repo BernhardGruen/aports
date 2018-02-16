@@ -14,6 +14,8 @@ makedepends="
 	zlib-dev
 	librsync-dev
 	acl-dev
+	libc6-compat
+	check-dev
 	"
 install=""
 subpackages="
@@ -25,8 +27,6 @@ source="
 	burp.init
 	"
 builddir="$srcdir/$pkgname-$pkgver"
-
-# make check does not work during linker phase - musl?.
 options="!check"
 
 build() {
@@ -36,8 +36,16 @@ build() {
 		--sbindir=/usr/bin \
 		--sysconfdir=/etc/burp \
 		--mandir=/usr/share/man \
-		--localstatedir=/var
+		--localstatedir=/var \
+		--disable-acl \
+		--disable-xattr
 	make
+}
+
+# Check does not yet work correctly - seems to be an incompatibility with musl
+check() {
+	cd "$builddir"
+	make check
 }
 
 package() {
