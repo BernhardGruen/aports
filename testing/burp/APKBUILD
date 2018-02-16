@@ -13,7 +13,8 @@ makedepends="
 	libressl-dev
 	zlib-dev
 	librsync-dev
-	acl-dev
+	"
+checkdepends="
 	libc6-compat
 	check-dev
 	"
