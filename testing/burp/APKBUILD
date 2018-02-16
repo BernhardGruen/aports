@@ -5,14 +5,28 @@ pkgrel=0
 pkgdesc="Burp is a network backup and restore program"
 url="http://burp.grke.org"
 arch="all"
-license="AGPL3"
+license="AGPL-3.0-only"
 depends=""
 depends_dev=""
-makedepends="uthash-dev libressl-dev zlib-dev librsync-dev acl-dev"
+makedepends="
+	uthash-dev
+	libressl-dev
+	zlib-dev
+	librsync-dev
+	acl-dev
+	"
 install=""
-subpackages="$pkgname-doc $pkgname-server"
-source="https://sourceforge.net/projects/$pkgname/files/$pkgname-$pkgver/$pkgname-$pkgver.tar.bz2 burp.init"
+subpackages="
+	$pkgname-doc
+	$pkgname-server
+	"
+source="
+	https://sourceforge.net/projects/$pkgname/files/$pkgname-$pkgver/$pkgname-$pkgver.tar.bz2
+	burp.init
+	"
 builddir="$srcdir/$pkgname-$pkgver"
+
+# make check does not work during linker phase - musl?.
 options="!check"
 
 build() {
@@ -36,7 +50,10 @@ package() {
 }
 
 server() {
-	pkgdesc="burp is a network backup and restore program - server configuration and helper scripts"
+	pkgdesc="burp is a network backup and restore program - \
+	server configuration and helper scripts"
+
+	# bash is needed on the server to run burp_ca, timer and notify scripts
 	depends="bash"
 	cd "$builddir"
 	mkdir -p "$subpkgdir"/var/spool/burp
@@ -48,7 +65,8 @@ server() {
 
 	mkdir -p "$subpkgdir"/etc/burp
 	mv "$pkgdir"/etc/burp/CA.cnf "$subpkgdir"/etc/burp/CA.cnf
-	mv "$pkgdir"/etc/burp/burp-server.conf "$subpkgdir"/etc/burp/burp-server.conf
+	mv "$pkgdir"/etc/burp/burp-server.conf \
+		"$subpkgdir"/etc/burp/burp-server.conf
 
 	install -Dm755 "$srcdir"/burp.init "$subpkgdir"/etc/init.d/burp
 
