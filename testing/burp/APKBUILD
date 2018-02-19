@@ -15,7 +15,6 @@ makedepends="
 	librsync-dev
 	"
 checkdepends="
-	libc6-compat
 	check-dev
 	"
 install=""
@@ -28,7 +27,7 @@ source="
 	burp.init
 	"
 builddir="$srcdir/$pkgname-$pkgver"
-options="!check"
+#options="!check"
 
 build() {
 	cd "$builddir"
