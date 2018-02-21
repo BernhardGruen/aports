@@ -1,0 +1,37 @@
+# Maintainer: Bernhard J. M. Gruen <bernhard.gruen@googlemail.com>
+
+pkgname=isa-l
+pkgver=2.21.0
+pkgrel=0
+pkgdesc="A collection of optimized low-level functions targeting storage applications"
+url="https://github.com/01org/$pkgname"
+arch="all"
+license="BSD"
+depends=""
+depends_dev=""
+makedepends="$depends_dev"
+install=""
+subpackages="$pkgname-dev"
+source="isa-l-$pkgver.tar.gz::https://github.com/01org/isa-l/archive/v$pkgver.tar.gz"
+builddir="$srcdir/isa-l-$pkgver"
+
+build() {
+	cd "$builddir"
+	./autogen.sh
+	./configure \
+		--prefix=/usr \
+		-q
+	make
+}
+
+check() {
+	cd "$builddir"
+	make check
+}
+
+package() {
+	cd "$builddir"
+	make DESTDIR="$pkgdir" install
+}
+
+sha512sums="609a827fd7edc42450937e78c3b52a8b74a3680e5e144295b65fed4cca52fdf83bad258434e05049572982dbc2f03d28590835d8855446d16d252627272a31cd  isa-l-2.21.0.tar.gz"
